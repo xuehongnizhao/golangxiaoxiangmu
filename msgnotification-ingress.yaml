@@ -1,0 +1,13 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: msgnotification-v1
+spec:
+  rules:
+  - host: 
+    http:
+      paths:
+      - path: /xt/msgnotification
+        backend:
+          serviceName: msgnotification-v1
+          servicePort: 8080	  
