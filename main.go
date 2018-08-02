@@ -25,7 +25,7 @@ func main() {
 	//注册数据库服务
 	models.InitDB()
 	//增加静态文件路径
-	beego.SetStaticPath("/xt/msgnotification/static", "static")
+	beego.SetStaticPath("/msgnotification/static", "static")
 	//初始化rigistry服务
 	registry.InitRegistry(cmd)
 
