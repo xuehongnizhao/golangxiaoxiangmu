@@ -38,7 +38,6 @@ func (this *MsgnotificationController) GetMessage() {
 		return
 	}
 	opt.BaseOption.Limit = limit
-	fmt.Println("-----%d",limit)
 	opt.BaseOption.Offset = limit * (page - 1)
 	opt.Name = this.GetString("name", "")
 	opt.Date = this.GetString("date","")
