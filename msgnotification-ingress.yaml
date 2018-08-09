@@ -7,7 +7,7 @@ spec:
   - host: 
     http:
       paths:
-      - path: /xt/msgnotification
+      - path: /msgnotification
         backend:
           serviceName: msgnotification-v1
-          servicePort: 8080	  
+          serviceort: 8080	  

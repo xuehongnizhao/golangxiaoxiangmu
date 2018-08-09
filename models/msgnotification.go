@@ -53,7 +53,6 @@ func QueryMessage(opt *QueryMsgnotification) ([]*Msgnotification, int, error) {
 		cond = cond.And("name__icontains", opt.Name)
 	}
 	if opt.Ftime != "" {
-		fmt.Println(opt.Ftime)
 		cond = cond.And("date__gte", opt.Ftime)
 	}
 	if opt.Ltime != "" {
