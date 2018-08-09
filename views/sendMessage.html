@@ -70,7 +70,7 @@ td .ivu-input{
 						</menu-item>
 					</i-menu>
 				</i-col>
-				<i-col span=21>
+				<i-col span=20>
 					<row v-show="postshow">
 						<i-form  :model="formItem"   :label-width="100">
 							<form-item label="手机号码:" prop="tel">
@@ -90,7 +90,7 @@ td .ivu-input{
 					</row>
 					<row v-show="postlistshow" style="margin-left: 10px">
 						<row style="float: right;margin: 10px">
-							<date-picker v-model="serachtime" type="datetimerange" format="yyyy-MM-dd HH:mm" placeholder="选择时间" :editable="false" style="width: 250px"></date-picker>
+							<date-picker v-model="serachtime" type="datetimerange" format="yyyy-MM-dd HH:mm" placeholder="选择发送时间" :clearable="false" :editable="false" style="width: 250px"></date-picker>
 							<i-input v-model="searchname" placeholder="输入发送人" style="width: 200px" /></i-input>
 							<i-input v-model="searchtel" placeholder="输入接收手机号" style="width: 200px" /></i-input>
 							<i-button @click="search" type="primary" style="margin-left: 8px;float: right;" >搜索</i-button>
@@ -100,10 +100,10 @@ td .ivu-input{
 						<br>
 						<br>
 						<br>
-						<i-table  :columns="columns" :data="tabledata"></i-table>
+						<i-table @on-row-click="rowclick" :columns="columns" :data="tabledata"></i-table>
 						<br>
 						<Row style="text-align: center;">
-							<Page  @on-change="pageChange" @on-page-size-change="pageSizeChange" :total="totalcount" size="small" show-total show-elevator show-sizer></Page>
+							<Page  :current.sync="page" @on-change="pageChange" @on-page-size-change="pageSizeChange" :total="totalcount" size="small" show-total show-elevator show-sizer></Page>
 							<br>
 							<br>
 						</Row>
@@ -241,10 +241,10 @@ td .ivu-input{
 				width:160,
 			},
 			{
-				align:'center',
+				align:'left',
 				title: '接收手机号码',
 				key: 'Tel',
-				width:115
+				width:195
 
 			},
 			{
@@ -306,12 +306,20 @@ td .ivu-input{
 			this.loadData();
 		},
 		methods: {
+			rowclick:function (data,index) {
+
+				data._expanded=!data._expanded
+				Vue.set(this.tabledata, index, data);
+				
+				console.log(data,index);	
+			},
 			clearsearch:function () {
 				this.ftime=""
 				this.ltime=""
 				this.searchtel=""
 				this.searchname=""
 				this.serachtime=""
+				this.page=1
 				this.loadList()	
 			},
 			search:function () {	
@@ -319,11 +327,7 @@ td .ivu-input{
 					this.ftime = this.serachtime[0].format("yyyy-MM-dd hh:mm:ss")
 					this.ltime = this.serachtime[1].format("yyyy-MM-dd hh:mm:ss")
 				}
-				if (!this.ValidatePhone(this.searchtel)&&this.searchtel) {
-					this.dialogAlert=true
-					this.alertMsg="请输入正确的手机号"
-					return
-				}
+				this.page=1
 				this.loadList()
 				
 			},
