@@ -90,7 +90,7 @@ textarea{
 					</row>
 					<row v-show="postlistshow" style="margin-left: 10px">
 						<row style="float: right;margin: 10px">
-							<date-picker v-model="serachtime" type="datetimerange" format="yyyy-MM-dd" placeholder="选择发送时间" @on-change="search" :editable="false" style="width: 180px"></date-picker>
+							<date-picker v-model="serachtime" type="datetimerange" format="yyyy-MM-dd" placeholder="选择发送时间" @on-clear="searchTimeClear" @on-change="search" :editable="false" style="width: 180px"></date-picker>
 							<i-select @on-change="search" v-model="searchname" clearable placeholder="请选择发送人" style="width:120px">
 								<i-option v-for="item in namelist" :value="item.Name" :key="item.Name">{{ item.Name }}</i-option>
 							</i-select>						
@@ -387,6 +387,11 @@ textarea{
 				this.page=1
 				this.loadList()
 				
+			},
+			searchTimeClear:function () {
+				this.ftime=""
+				this.ltime=""
+				this.search	
 			},
 			getSStatus:function (status) {
 				switch(status) {

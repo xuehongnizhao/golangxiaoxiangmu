@@ -52,7 +52,7 @@ func QueryMessage(opt *QueryMsgnotification) ([]*Msgnotification, int, error) {
 		cond = cond.And("tel__icontains", opt.Tel)
 	}
 	if opt.Name != "" {
-		cond = cond.And("name__icontains", opt.Name)
+		cond = cond.And("name", opt.Name)
 	}
 	if opt.Ftime != "" {
 		cond = cond.And("date__gte", opt.Ftime)
