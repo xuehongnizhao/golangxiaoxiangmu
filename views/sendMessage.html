@@ -24,7 +24,7 @@ textarea{
 	box-shadow: none;
 }
 
-.发送成功{
+.已发送{
 	color: green
 }
 .发送失败{
@@ -32,7 +32,7 @@ textarea{
 }
 .发送中{
 	color: #2d8cf0
-}
+}weifasong
 .ivu-form .ivu-form-item-label{
 	font-size: 14px;
 }
@@ -208,6 +208,11 @@ td .ivu-input{
 						props:{
 							type:"primary",
 							disabled:app.getResendDisabled(params.row.Status)
+						},
+						on:{
+							click:function(){
+								app.resendMessage(params.row.Id,params)
+							}
 						}
 					},"重发")
 				}
@@ -221,7 +226,7 @@ td .ivu-input{
 					return h("i-table", {
 						props:{
 							columns:app.coumnsdetail,
-							data:params.row.Telnumber,
+							data:app.handleDataForIndex(params.row),
 							border:false
 						}
 					})
@@ -306,6 +311,42 @@ td .ivu-input{
 			this.loadData();
 		},
 		methods: {
+			handleDataForIndex:function(data){
+				for (var i = 0; i < data.Telnumber.length; i++) {
+					data.Telnumber[i].pindex=data._index
+				}
+				return data.Telnumber
+			},
+			resendMessage:function(id,params){
+	
+				
+				var _this=this
+				$.ajax({
+					url: "/msgnotification/resendmessage",
+					type: 'post',
+					dataType: "json",
+					data: {
+						id:id,
+					},
+					async: true,
+					success: function(data) {
+						if(data.success) {
+							tabledatai = _this.tabledata[params.row.pindex]
+							tabledatai.Status=data.data.FStatus
+							tabledatai.Telnumber[params.row._index].Status=data.data.SStatus
+							_this.dialogAlert = true;
+							_this.alertMsg = data.errmsg
+						}else{
+							_this.dialogAlert = true;
+							_this.alertMsg = data.errmsg;
+						}
+					},
+					error: function() {
+						_this.dialogAlert = true;
+						_this.alertMsg = '错误，请稍后再试！';
+					}
+				});
+			},
 			rowclick:function (data,index) {
 
 				data._expanded=!data._expanded
@@ -336,7 +377,7 @@ td .ivu-input{
 					return "发送中"
 					break;
 					case 1:
-					return "发送成功"
+					return "已发送"
 					break;
 					case -1:
 					return "发送失败"
@@ -388,7 +429,12 @@ td .ivu-input{
 							this.alertMsg="手机号填写错误错误号码为: "+telArrOld[i]
 							return
 						}else{
-							telArrNew.push(telArrOld[i])	
+							if(telArrNew.indexOf(telArrOld[i])!=-1){
+								break
+							}else{
+								telArrNew.push(telArrOld[i])		
+							}
+							
 						}
 					}
 
@@ -418,7 +464,7 @@ td .ivu-input{
 					success: function(data) {
 						if(data.success) {
 							_this.dialogAlert = true;
-							_this.alertMsg = "发送成功";
+							_this.alertMsg = data.errmsg
 						}else{
 							_this.dialogAlert = true;
 							_this.alertMsg = data.errmsg;
@@ -538,6 +584,7 @@ td .ivu-input{
 						_this.alertMsg = '错误，请稍后再试！';
 					}
 				});
+				
 			},
 
 		}

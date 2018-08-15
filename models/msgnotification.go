@@ -1,44 +1,46 @@
 package models
 
 import (
-"common/base"
-"fmt"
-"github.com/astaxie/beego"
-"github.com/astaxie/beego/orm"
-"github.com/astaxie/beego/validation"
+	"common/base"
+	"fmt"
+	"strconv"
+
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
+	"github.com/astaxie/beego/validation"
 )
 
 type Msgnotification struct {
-	Id     int64
-	Name   string
-	Date   string
-	Content string
-	Tel string
-	Ending string
-	Status int64
+	Id        int64
+	Name      string
+	Date      string
+	Content   string
+	Tel       string
+	Ending    string
+	Status    int64
 	Telnumber []*Telnumber `orm:"-"`
 }
 
 type Telnumber struct {
-	Id     int64
-	Pid   int64
-	Tel   string
-	Status int64
+	Id      int64
+	Pid     int64
+	Tel     string
+	Status  int64
+	Content string `orm:"-"`
 }
 
 func init() {
-	orm.RegisterModel(new(Msgnotification),new(Telnumber))
+	orm.RegisterModel(new(Msgnotification), new(Telnumber))
 }
 
 type QueryMsgnotification struct {
 	BaseOption *base.QueryOptions
 	Name       string
-	Ftime 	string
-	Ltime	string
-	Tel 	string
-	Date  	string
+	Ftime      string
+	Ltime      string
+	Tel        string
+	Date       string
 }
-
 
 //查询发送记录
 func QueryMessage(opt *QueryMsgnotification) ([]*Msgnotification, int, error) {
@@ -79,8 +81,16 @@ func GetTel(opt int64) ([]*Telnumber, error) {
 	return telnumber, err
 }
 
+func GetTelWithId(id int64) (*Telnumber, error) {
+	o := orm.NewOrm()
+	sql := "SELECT b.`id`,b.pid, a.`content` ,b.`tel` FROM msgnotification a, telnumber b WHERE a.`id`=b.`pid` AND b.`id`=" + strconv.FormatInt(id, 10) + ";"
+	msg := new(Telnumber)
+	err := o.Raw(sql).QueryRow(&msg)
+	return msg, err
+}
+
 //添加发送记录
-func PostMessage(msg *Msgnotification) ( int64, error) {
+func PostMessage(msg *Msgnotification) (int64, error) {
 	o := orm.NewOrm()
 	o.Begin()
 	err := msg.Valited()
@@ -88,13 +98,13 @@ func PostMessage(msg *Msgnotification) ( int64, error) {
 	if err != nil {
 		beego.Error(err)
 		o.Rollback()
-		return -1,err
+		return -1, err
 	}
 	o.Commit()
 
-	return id,err
+	return id, err
 }
-func AddMsgTel(tel []*Telnumber)  error {
+func AddMsgTel(tel []*Telnumber) error {
 	o := orm.NewOrm()
 	o.Begin()
 	_, err := o.InsertMulti(len(tel), tel)
@@ -107,8 +117,46 @@ func AddMsgTel(tel []*Telnumber)  error {
 
 	return nil
 }
+func UpdateTelStatus(tel *Telnumber) (int, error) {
+	o := orm.NewOrm()
+	o.Begin()
+	_, err := o.Update(tel, "status")
+	if err != nil {
+		o.Rollback()
+		return -1, err
+	}
+	telM := make([]*Telnumber, 0)
+	sql := "SELECT * FROM telnumber WHERE pid =" + strconv.FormatInt(tel.Pid, 10) + " AND STATUS=-1;"
+	count, err := o.Raw(sql).QueryRows(&telM)
+	if count == 0 {
+		msg := new(Msgnotification)
+		msg.Id = tel.Pid
+		msg.Status = 1
+		_, err = o.Update(msg, "status")
+		if err != nil {
+			o.Rollback()
+			return -1, err
+		}
+		o.Commit()
+		return 1, err
+	}
 
+	o.Commit()
+	return -1, err
 
+}
+func UpdateMsgNotification(msg *Msgnotification) error {
+	o := orm.NewOrm()
+	o.Begin()
+	_, err := o.Update(msg, "status")
+	if err != nil {
+		o.Rollback()
+		return err
+	}
+	o.Commit()
+	return err
+
+}
 func (this *Msgnotification) Valited() error {
 	valid := validation.Validation{}
 	valid.Required(this.Name, "name")
@@ -121,4 +169,3 @@ func (this *Msgnotification) Valited() error {
 	}
 	return nil
 }
-
