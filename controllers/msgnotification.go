@@ -112,7 +112,6 @@ func (this *MsgnotificationController) AddMessage() {
 			telnumbermodel.Pid = pid
 			telnumbermodel.Tel = numberarr[i]
 			statuscode = sendMsgWithService(numberarr[i], content+ending)
-			beego.Debug(statuscode)
 			if statuscode != "200 OK" {
 				telnumbermodel.Status = -1
 				sendSuccess = false
