@@ -2,19 +2,19 @@ FROM 192.168.10.14:5000/alpine:v1
 
 MAINTAINER ZhangQiang <494000616@qq.com>
 
-RUN mkdir -p /var/deploy/msgnotification/
+RUN mkdir -p /var/deploy/xt/msgnotification/
 
 # 文件移动
-ADD msgnotification /var/deploy/msgnotification
-ADD msgnotification.conf /var/deploy/msgnotification
+ADD msgnotification /var/deploy/xt/msgnotification
+ADD msgnotification.conf /var/deploy/xt/msgnotification
 
-COPY static/ /var/deploy/msgnotification/static/
+COPY static/ /var/deploy/xt/msgnotification/static/
 
-COPY views/ /var/deploy/msgnotification/views/
+COPY views/ /var/deploy/xt/msgnotification/views/
 
 
 # 切换目录
-WORKDIR /var/deploy/msgnotification/
+WORKDIR /var/deploy/xt/msgnotification/
 
 EXPOSE 8080
 

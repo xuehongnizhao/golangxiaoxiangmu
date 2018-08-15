@@ -15,13 +15,13 @@ func init() {
 }
 
 
-//通过rtxaccount查人
-func UserName(rtxaccount string) ([]*User, error) {
+//查人
+func UserName() ([]*User, error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(User))
 	
 	user := make([]*User, 0)
- 	_,err := qs.Filter("rtxaccount",rtxaccount).All(&user)
+ 	_,err := qs.All(&user)
 
 	return user, err
 }

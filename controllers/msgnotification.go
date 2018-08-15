@@ -92,7 +92,7 @@ func (this *MsgnotificationController) AddMessage() {
 	msg.Name = name
 	msg.Ending = ending
 	msg.Tel = tel
-	msg.Status = 1
+	msg.Status = 0
 	msg.Content = content
 	msg.Date = base.GetCurrentData()
 	pid, err := models.PostMessage(msg)
@@ -147,6 +147,7 @@ func (this *MsgnotificationController) AddMessage() {
 	ar.SetError(fmt.Sprintf("发送成功"))
 	ar.Success = true
 	this.ServeJSON()
+
 }
 func (this *MsgnotificationController) ResendMessage() {
 	ar := ajax.NewAjaxResult()
@@ -171,7 +172,6 @@ func (this *MsgnotificationController) ResendMessage() {
 	statuscode := sendMsgWithService(tel.Tel, tel.Content)
 	if statuscode != "200 OK" {
 		ar.SetError(fmt.Sprintf("发送短信异常，错误原因为：[%s]", statuscode))
-		beego.Error(err)
 		this.ServeJSON()
 		return
 	}

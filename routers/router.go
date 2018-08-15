@@ -8,7 +8,7 @@ import (
 
 func init() {
 
-	ns := beego.NewNamespace("/msgnotification",
+	ns := beego.NewNamespace("/xt/msgnotification",
 		//404页面
 		beego.NSRouter("/errorpage", &controllers.FourZeroController{}, "GET:Get"),
 		//添加发送记录
