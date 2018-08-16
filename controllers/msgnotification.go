@@ -1,15 +1,15 @@
 package controllers
 
 import (
-	"common/ajax"
-	"common/base"
-	"fmt"
-	"msgnotification/models"
-	"net/url"
-	"strings"
-	"time"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/httplib"
+"common/ajax"
+"common/base"
+"fmt"
+"msgnotification/models"
+"net/url"
+"strings"
+"time"
+"github.com/astaxie/beego"
+"github.com/astaxie/beego/httplib"
 )
 
 type MsgnotificationController struct {
@@ -143,7 +143,14 @@ func (this *MsgnotificationController) AddMessage() {
 		this.ServeJSON()
 		return
 	}
-
+	msg.Status = 1
+	err := models.UpdateMsgNotification(msg)
+	if err != nil {
+		ar.SetError(fmt.Sprintf("更新状态异常，错误原因为：[%s]", statuscode))
+		ar.Success = false
+		this.ServeJSON()
+		return
+	}
 	ar.SetError(fmt.Sprintf("发送成功"))
 	ar.Success = true
 	this.ServeJSON()
