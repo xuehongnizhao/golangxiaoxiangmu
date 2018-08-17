@@ -10,6 +10,7 @@ import (
 "time"
 "github.com/astaxie/beego"
 "github.com/astaxie/beego/httplib"
+"msgnotification/config"
 )
 
 type MsgnotificationController struct {
@@ -144,7 +145,7 @@ func (this *MsgnotificationController) AddMessage() {
 		return
 	}
 	msg.Status = 1
-	err := models.UpdateMsgNotification(msg)
+	err = models.UpdateMsgNotification(msg)
 	if err != nil {
 		ar.SetError(fmt.Sprintf("更新状态异常，错误原因为：[%s]", statuscode))
 		ar.Success = false
@@ -193,7 +194,9 @@ func (this *MsgnotificationController) ResendMessage() {
 	this.ServeJSON()
 }
 func sendMsgWithService(sendNumber string, sendContent string) string {
-	req := httplib.Post("http://10.166.1.29:10000/SMSService/SMSrestful/sendMessage")
+	serverurl := "htttp://"+config.DefaultConfig.MsgServer.Ip+":"+config.DefaultConfig.MsgServer.Port+"/SMSService/SMSrestful/sendMessage"
+	beego.Debug(serverurl)
+	req := httplib.Post(serverurl)
 	req.Header("Content-Type", "Application/json")
 	req.Param("sendNum", sendNumber)
 	contentP := url.QueryEscape(sendContent)

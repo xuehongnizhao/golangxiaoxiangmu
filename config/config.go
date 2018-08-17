@@ -1,21 +1,21 @@
 package config
 
 import (
-	"common/base"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"io/ioutil"
-	"net/url"
-	"os"
-	"os/exec"
-	"path"
-	registryv1 "plugins/registry/v1"
-	"strings"
-	"time"
+"common/base"
+"encoding/json"
+"errors"
+"fmt"
+"io/ioutil"
+"net/url"
+"os"
+"os/exec"
+"path"
+registryv1 "plugins/registry/v1"
+"strings"
+"time"
 
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/httplib"
+"github.com/astaxie/beego"
+"github.com/astaxie/beego/httplib"
 )
 
 var (
@@ -28,6 +28,7 @@ type RunningConfig struct {
 	Base      baseConfig
 	Log       logConfig       `json:"log"`
 	FileLog   fileLogConfig   `json:"log_file"`
+	MsgServer   msgServerConfig   `json:"msg_server"`
 	SyslogLog syslogLogConfig `json:"log_syslog"`
 	Registry  registryConfig  `json:"registry"`
 	Server    serverConfig    `json:"server"`
@@ -39,6 +40,10 @@ type RunningConfig struct {
 
 type baseConfig struct {
 	RootDir string
+}
+type msgServerConfig struct {
+	Ip string
+	Port string
 }
 type logConfig struct {
 	Level    string `json:"level"`
@@ -234,6 +239,8 @@ func LoadConfigFromFile(file string) {
 
 	DefaultConfig.Template.Left = beego.AppConfig.DefaultString("template::left", "<<<")
 	DefaultConfig.Template.Right = beego.AppConfig.DefaultString("template:right", ">>>")
+	DefaultConfig.MsgServer.Ip = beego.AppConfig.DefaultString("msg_server::ip", "10.166.1.29")
+	DefaultConfig.MsgServer.Port = beego.AppConfig.DefaultString("msg_server::port", "10000")
 
 }
 
