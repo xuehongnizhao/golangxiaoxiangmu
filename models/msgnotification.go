@@ -18,7 +18,7 @@ type Msgnotification struct {
 	Tel       string
 	Ending    string
 	Status    int64
-	Telnumber []*Telnumber `orm:"-"`
+	Telnumber []*TelnumberOption `orm:"-"`
 }
 
 type Telnumber struct {
@@ -26,8 +26,18 @@ type Telnumber struct {
 	Pid     int64
 	Tel     string
 	Status  int64
-	Content string `orm:"-"`
 }
+
+type TelnumberOption struct {
+	Id      int64
+	Pid     int64
+	Tel     string
+	Status  int64
+	Content string 
+	Name string 
+}
+
+
 
 func init() {
 	orm.RegisterModel(new(Msgnotification), new(Telnumber))
@@ -70,22 +80,22 @@ func QueryMessage(opt *QueryMsgnotification) ([]*Msgnotification, int, error) {
 	_, err = qs.OrderBy("-date").Limit(opt.BaseOption.Limit).Offset(opt.BaseOption.Offset).All(&message)
 	return message, int(num), err
 }
-func GetTel(opt int64) ([]*Telnumber, error) {
+func GetTel(opt int64) ([]*TelnumberOption, error) {
 	o := orm.NewOrm()
-	qs := o.QueryTable(new(Telnumber))
-	cond := new(orm.Condition)
-	cond = cond.And("pid", opt)
-	qs = qs.SetCond(cond)
-	telnumber := make([]*Telnumber, 0)
-	_, err := qs.All(&telnumber)
-	return telnumber, err
+	sql := "select a.id,a.pid,a.status,a.tel,b.name from telnumber a left JOIN contacts b on a.tel=b.tel where pid = "+strconv.FormatInt(opt, 10) +";"
+	msg := make([]*TelnumberOption,0)
+
+	_,err := o.Raw(sql).QueryRows(&msg)
+	beego.Debug(msg[0])
+	return msg, err
 }
 
-func GetTelWithId(id int64) (*Telnumber, error) {
+func GetTelWithId(id int64) (*TelnumberOption, error) {
 	o := orm.NewOrm()
 	sql := "SELECT b.`id`,b.pid, a.`content` ,b.`tel` FROM msgnotification a, telnumber b WHERE a.`id`=b.`pid` AND b.`id`=" + strconv.FormatInt(id, 10) + ";"
-	msg := new(Telnumber)
+	msg := new(TelnumberOption)
 	err := o.Raw(sql).QueryRow(&msg)
+	beego.Debug(msg)
 	return msg, err
 }
 

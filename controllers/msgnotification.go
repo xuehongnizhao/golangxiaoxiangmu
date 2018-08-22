@@ -61,6 +61,7 @@ func (this *MsgnotificationController) GetMessage() {
 	}
 	for _, v := range message {
 		telarr, err := models.GetTel(v.Id)
+
 		if err != nil {
 			ar.SetError("获取电话号异常")
 			beego.Error(err)
@@ -168,7 +169,7 @@ func (this *MsgnotificationController) ResendMessage() {
 		this.ServeJSON()
 		return
 	}
-	tel := new(models.Telnumber)
+	tel := new(models.TelnumberOption)
 	tel, err = models.GetTelWithId(id)
 	if err != nil {
 		ar.SetError("查询电话号码异常")
@@ -183,8 +184,12 @@ func (this *MsgnotificationController) ResendMessage() {
 		this.ServeJSON()
 		return
 	}
-	tel.Status = 1
-	fStatus, err := models.UpdateTelStatus(tel)
+	newtel := new(models.Telnumber)
+	newtel.Status = 1
+	newtel.Id = tel.Id
+	newtel.Tel = tel.Tel
+	newtel.Pid = tel.Pid
+	fStatus, err := models.UpdateTelStatus(newtel)
 	statusNew := new(sendStatus)
 	statusNew.FStatus = fStatus
 	statusNew.SStatus = 1

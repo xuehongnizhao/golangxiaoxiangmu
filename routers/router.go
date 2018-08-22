@@ -21,6 +21,13 @@ func init() {
 		beego.NSRouter("/getuser", &controllers.UserController{}, "POST:UserName"),
 		//设置短信结尾
 		beego.NSRouter("/setparam", &controllers.ParamController{}, "POST:SetParam"),
+		//查询常用联系人
+		beego.NSRouter("/getcontacts", &controllers.ContactsController{}, "POST:GetContact"),
+		//添加常用联系人
+		beego.NSRouter("/addcontact", &controllers.ContactsController{}, "POST:AddContact"),
+		//修改常用联系人
+		beego.NSRouter("/updatecontact", &controllers.ContactsController{}, "POST:UpdateContact"),
+
 		beego.NSRouter("/", &controllers.ViewController{}, "GET:SendMessage"),
 	)
 	beego.AddNamespace(ns)
