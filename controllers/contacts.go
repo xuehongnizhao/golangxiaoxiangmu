@@ -49,7 +49,7 @@ func (this *ContactsController) AddContact() {
 		return
 	}
 	if isExist>0 {
-		ar.SetError(fmt.Sprintf("电话号已经存在不能重复添加"))
+		ar.SetError(fmt.Sprintf("联系人已经存在"))
 		this.ServeJSON()
 		return
 	}
@@ -96,7 +96,7 @@ func (this *ContactsController) UpdateContact() {
 	}
 
 	if isExist>0&&isExist!=id {
-		ar.SetError(fmt.Sprintf("电话号已经存在不能修改"))
+		ar.SetError(fmt.Sprintf("联系人已经存在"))
 		this.ServeJSON()
 		return
 	}
