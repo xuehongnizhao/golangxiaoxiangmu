@@ -45,7 +45,6 @@ func AddContact(contact *Contacts)  error{
 	return err
 }
 func UpdateContact(contact *Contacts)  error {
-	beego.Debug(contact)
 	o := orm.NewOrm()
 	o.Begin()
 	_, err := o.Update(contact)

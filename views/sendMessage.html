@@ -130,7 +130,7 @@ textarea{
 						<br>
 						<br>
 						<br>
-						<i-table  stripe :columns="coumnsContacts" :data="contactData"></i-table>
+						<i-table border  stripe :columns="coumnsContacts" :data="contactData"></i-table>
 
 					</row>
 					<row v-show="editendingshow">
@@ -255,8 +255,6 @@ textarea{
 			group:[],
 			detailTableData:[],
 			checkAllGroup:[],
-
-
 			formItem:{
 				'content':"",
 				'tel':"",
@@ -278,7 +276,11 @@ textarea{
 				align:'center',
 				title: '姓名',
 				key: 'Name',
-				width:300
+				render:function (h, params) {
+					return h('span', {
+					},app.getName(params.row.Name))
+				}
+
 			},
 			{
 				align:'center',
@@ -291,7 +293,6 @@ textarea{
 				align:'center',
 				title: '状态',
 				key: 'Status',
-				width:100,
 				render:function (h, params) {
 					return h('span', {
 						class:app.getContactStatus(params.row.Status)
@@ -303,7 +304,6 @@ textarea{
 				align:'center',
 				title: '操作',
 				key: 'Tel',
-				width:200,
 				render:function (h, params) {
 					return h('i-button', {
 						
@@ -330,6 +330,11 @@ textarea{
 				align:'center',
 				title: '姓名',
 				key: 'Name',
+				render:function (h, params) {
+					return h('span', {
+					},app.getName(params.row.Name))
+				}
+
 				
 
 			},
@@ -469,20 +474,25 @@ textarea{
 			this.loadContacts(1);
 		},
 		methods: {
-
+			getName:function (name) {
+				if (name) {
+					return name
+				}
+				return "-"
+			},
 			mytrim:function (str){ 
 				return str.replace(/(^;*)|(;*$)/g,""); 
 			},
 			telinputchange:function () {
-
-				this.formItem.tel=this.mytrim(this.formItem.tel.replace("；",";"))
+				this.formItem.tel=this.formItem.tel.trim()
+				this.formItem.tel=this.formItem.tel.replace("；",";")
+				this.formItem.tel=this.mytrim(this.formItem.tel)
 				var oldtelarr = this.formItem.tel.split(";")
 
 				this.checkAllGroup=oldtelarr
 			},
 			checkAllGroupChange:function () {
-
-				this.formItem.Tel = this.mytrim(this.checkAllGroup.join(";"))
+				this.formItem.Tel = this.mytrim(this.checkAllGroup.join(";")).trim()
 				Vue.set(this.formItem, "tel", this.formItem.Tel);
 			},
 

@@ -86,7 +86,6 @@ func GetTel(opt int64) ([]*TelnumberOption, error) {
 	msg := make([]*TelnumberOption,0)
 
 	_,err := o.Raw(sql).QueryRows(&msg)
-	beego.Debug(msg[0])
 	return msg, err
 }
 
@@ -95,7 +94,6 @@ func GetTelWithId(id int64) (*TelnumberOption, error) {
 	sql := "SELECT b.`id`,b.pid, a.`content` ,b.`tel` FROM msgnotification a, telnumber b WHERE a.`id`=b.`pid` AND b.`id`=" + strconv.FormatInt(id, 10) + ";"
 	msg := new(TelnumberOption)
 	err := o.Raw(sql).QueryRow(&msg)
-	beego.Debug(msg)
 	return msg, err
 }
 

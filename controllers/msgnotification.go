@@ -158,6 +158,7 @@ func (this *MsgnotificationController) AddMessage() {
 	this.ServeJSON()
 
 }
+//重新发送短信
 func (this *MsgnotificationController) ResendMessage() {
 	ar := ajax.NewAjaxResult()
 	this.Data["json"] = ar
@@ -177,7 +178,6 @@ func (this *MsgnotificationController) ResendMessage() {
 		this.ServeJSON()
 		return
 	}
-
 	statuscode := sendMsgWithService(tel.Tel, tel.Content)
 	if statuscode != "200 OK" {
 		ar.SetError(fmt.Sprintf("发送短信异常，错误原因为：[%s]", statuscode))
@@ -200,7 +200,6 @@ func (this *MsgnotificationController) ResendMessage() {
 }
 func sendMsgWithService(sendNumber string, sendContent string) string {
 	serverurl := "htttp://"+config.DefaultConfig.MsgServer.Ip+":"+config.DefaultConfig.MsgServer.Port+"/SMSService/SMSrestful/sendMessage"
-	beego.Debug(serverurl)
 	req := httplib.Post(serverurl)
 	req.Header("Content-Type", "Application/json")
 	req.Param("sendNum", sendNumber)
