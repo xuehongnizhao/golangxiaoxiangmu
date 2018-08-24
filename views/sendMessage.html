@@ -849,12 +849,17 @@ textarea{
 			},
 			loadContacts:function (status) {
 				var _this=this
+				var lmt = _this.limitc
+				if (status == 1) {
+					lmt =0
+					_this.pagec=1
+				}
 				$.ajax({
 					url: "/xt/msgnotification/getcontacts",
 					type: 'post',
 					dataType: "json",
 					data: {
-						limit:_this.limitc,
+						limit:lmt,
 						page:_this.pagec,
 						status:status
 					},
