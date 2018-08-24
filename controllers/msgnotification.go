@@ -194,12 +194,12 @@ func (this *MsgnotificationController) ResendMessage() {
 	statusNew.FStatus = fStatus
 	statusNew.SStatus = 1
 	ar.Data = statusNew
-	ar.SetError(fmt.Sprintf("发送成功"))
 	ar.Success = true
 	this.ServeJSON()
 }
 func sendMsgWithService(sendNumber string, sendContent string) string {
-	serverurl := "htttp://"+config.DefaultConfig.MsgServer.Ip+":"+config.DefaultConfig.MsgServer.Port+"/SMSService/SMSrestful/sendMessage"
+	serverurl := "http://"+config.DefaultConfig.MsgServer.Ip+":"+config.DefaultConfig.MsgServer.Port+"/SMSService/SMSrestful/sendMessage"
+	beego.Debug(serverurl)
 	req := httplib.Post(serverurl)
 	req.Header("Content-Type", "Application/json")
 	req.Param("sendNum", sendNumber)

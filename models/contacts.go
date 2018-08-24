@@ -2,6 +2,7 @@ package models
 
 import (
 "github.com/astaxie/beego"
+"common/base"
 "github.com/astaxie/beego/orm"
 )
 
@@ -12,23 +13,32 @@ type Contacts struct {
 	Tel       string
 	Status    int64
 }
+type QueryContactsOpt struct {
+	BaseOption *base.QueryOptions
+	Status int64
+}
 
 func init() {
 	orm.RegisterModel(new(Contacts))
 }
 
 //查询联系人
-func QueryContacts(status int64) ([]*Contacts, error) {
+func QueryContacts(opt *QueryContactsOpt) ([]*Contacts,int, error) {
 	o := orm.NewOrm()
 	qs := o.QueryTable(new(Contacts))
-	if status==1 {
+	if opt.Status==1 {
 		cond := new(orm.Condition)
 		cond = cond.And("status", 1)
 		qs = qs.SetCond(cond)
 	}
 	contacts := make([]*Contacts, 0)
-	_, err := qs.OrderBy("-status","id","name").All(&contacts)
-	return contacts, err
+	num, err := qs.Count()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	_, err = qs.OrderBy("-status","id","name").Limit(opt.BaseOption.Limit).Offset(opt.BaseOption.Offset).All(&contacts)
+	return contacts, int(num),err
 }
 
 //添加联系人

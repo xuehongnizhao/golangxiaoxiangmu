@@ -15,21 +15,43 @@ type ContactsController struct {
 //查询人员
 func (this *ContactsController) GetContact() {
 	ar := ajax.NewAjaxResult()
+	bp := new(base.QueryOptions)
+	opt := new(models.QueryContactsOpt)
+	opt.BaseOption = bp
+	var err error
+	limit, err := this.GetInt("limit", 0)
+	if err != nil {
+		ar.SetError("limit获取发生异常")
+		beego.Error(err)
+		this.ServeJSON()
+		return
+	}
+	page, err := this.GetInt("page", 1)
+	if err != nil {
+		ar.SetError("page获取发生异常")
+		beego.Error(err)
+		this.ServeJSON()
+		return
+	}
+	opt.BaseOption.Limit = limit
+	opt.BaseOption.Offset = limit * (page - 1)
 	this.Data["json"] = ar
 	status,err:=this.GetInt64("status",0)
+
 	if err != nil {
 		ar.SetError("状态获取异常")
 		beego.Error(err)
 		this.ServeJSON()
 		return
 	}
-
-	contacts, err := models.QueryContacts(status)
+	opt.Status = status
+	contacts, num,err := models.QueryContacts(opt)
 	if err!=nil {
 		ar.SetError("错误请稍后重试或联系管理员")
 		this.ServeJSON()
 		return
 	}
+	ar.Total = num
 	ar.Data=contacts
 	ar.Success = true
 	this.ServeJSON()

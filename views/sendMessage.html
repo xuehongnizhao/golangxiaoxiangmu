@@ -62,7 +62,7 @@ textarea{
 		<template >
 			<br><br>
 			<row v-show="!show">
-				<i-col style="width: 160px;display: inline-block;float: left;">
+				<i-col span=3 style="position:fixed; display: inline-block;float: left;">
 					<i-menu @on-select="menuselect" theme="light" active-name="post" width=80>
 						<menu-item name="post">
 							发送短信
@@ -79,7 +79,7 @@ textarea{
 						</menu-item>
 					</i-menu>
 				</i-col>
-				<i-col span=20>
+				<i-col span=19 offset=4>
 					<row v-show="postshow">
 						<i-form  :model="formItem"   :label-width="100">
 							<form-item label="手机号码:" prop="tel">
@@ -131,7 +131,12 @@ textarea{
 						<br>
 						<br>
 						<i-table border  stripe :columns="coumnsContacts" :data="contactData"></i-table>
+						<br>
+						<Row style="text-align: center;">
+							<Page  :current.sync="pagec" @on-change="pageChangec" @on-page-size-change="pageSizeChangec" :total="totalcountc" size="small" show-total show-elevator show-sizer></Page>
+						</Row>
 
+						<br><br>
 					</row>
 					<row v-show="editendingshow">
 						<i-form :label-width="100">
@@ -466,7 +471,9 @@ textarea{
 			totalcount:0,
 			limit:10,
 			page:1,
-
+			totalcountc:0,
+			limitc:10,
+			pagec:1,
 
 		},
 		created:function(){
@@ -514,11 +521,11 @@ textarea{
 					async: true,
 					success: function(data) {
 						if(data.success) {
-							tabledatai = _this.tabledata[params.row.pindex]
+							tabledatai = _this.tabledata[_this.resendData.row.pindex]
 							tabledatai.Status=data.data.FStatus
-							tabledatai.Telnumber[params.row._index].Status=data.data.SStatus
+							tabledatai.Telnumber[_this.resendData.row._index].Status=data.data.SStatus
 							_this.dialogAlert = true;
-							_this.alertMsg = data.errmsg
+							_this.alertMsg = "发送成功"
 						}else{
 							_this.dialogAlert = true;
 							_this.alertMsg = data.errmsg;
@@ -800,6 +807,15 @@ textarea{
 				this.limit=pageSize
 				this.loadList()
 			},
+			pageChangec:function (pagec) {
+				this.pagec=pagec;
+				this.loadContacts(0);
+			},
+			pageSizeChangec:function (pageSizec) {
+				this.limitc=pageSizec
+				this.loadContacts(0);
+			},
+
 			menuselect:function (name) {
 				switch(name) {
 					case "post":
@@ -838,11 +854,14 @@ textarea{
 					type: 'post',
 					dataType: "json",
 					data: {
+						limit:_this.limitc,
+						page:_this.pagec,
 						status:status
 					},
 					async: true,
 					success: function(data) {
 						if(data.success) {
+							_this.totalcountc=data.total
 							_this.contactData=data.data
 						}else{
 							_this.dialogAlert = true;
