@@ -17,6 +17,8 @@ func init() {
 		beego.NSRouter("/getmessage", &controllers.MsgnotificationController{}, "POST:GetMessage"),
 		//重新发送短信
 		beego.NSRouter("/resendmessage", &controllers.MsgnotificationController{}, "POST:ResendMessage"),
+		//获取统计信息
+		beego.NSRouter("/getcount", &controllers.MsgnotificationController{}, "POST:GetStatistics"),
 		//获取用户姓名
 		beego.NSRouter("/getuser", &controllers.UserController{}, "POST:UserName"),
 		//设置短信结尾
@@ -27,6 +29,7 @@ func init() {
 		beego.NSRouter("/addcontact", &controllers.ContactsController{}, "POST:AddContact"),
 		//修改常用联系人
 		beego.NSRouter("/updatecontact", &controllers.ContactsController{}, "POST:UpdateContact"),
+
 
 		beego.NSRouter("/", &controllers.ViewController{}, "GET:SendMessage"),
 	)

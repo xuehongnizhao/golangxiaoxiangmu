@@ -20,6 +20,23 @@ type sendStatus struct {
 	SStatus int
 	FStatus int
 }
+//查询每月发送量
+func (this *MsgnotificationController) GetStatistics() {
+	ar := ajax.NewAjaxResult()
+	this.Data["json"] = ar
+	var err error
+	statistics, err := models.GetCount()
+	if err != nil {
+		ar.SetError("获取统计信息发生异常")
+		beego.Error(err)
+		this.ServeJSON()
+		return
+	}
+	
+	ar.Data = statistics
+	ar.Success = true
+	this.ServeJSON()
+}
 
 //查询信息列表
 func (this *MsgnotificationController) GetMessage() {

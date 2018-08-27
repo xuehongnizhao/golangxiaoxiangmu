@@ -7,6 +7,7 @@
 	<script src="/xt/msgnotification/static/js/jquery.min.js"></script>
 	<link rel="stylesheet" href="/xt/msgnotification/static/dist/styles/iview.css">
 	<script src="/xt/msgnotification/static/dist/iview.min.js"></script>
+	<script src="/xt/msgnotification/static/js/echarts.common.min.js"></script>
 	<script src="/xt/msgnotification/static/iconfont/iconfont.js"></script>
 </head>
 <style>
@@ -73,6 +74,9 @@ textarea{
 						</menu-item>
 						<menu-item name="editending">
 							短信结尾
+						</menu-item>
+						<menu-item name="countmsg">
+							短信统计
 						</menu-item>
 						<menu-item name="contacts">
 							常用联系人
@@ -148,6 +152,10 @@ textarea{
 							</form-item>
 						</i-form>
 					</row>
+					<row v-show="countmsg" >
+						<div ref="container" style="height: 50em;width: 80em"></div>
+					</row>
+
 				</i-col>
 			</row>
 			<row v-show="show" style="text-align: center;margin: 200px;font-size: 24px">
@@ -243,6 +251,7 @@ textarea{
 			resendData:{},
 			ftime:"",
 			ltime:"",
+			countmsg:false,
 			serachtime:"",
 			searchname:'',
 			searchtel:"",
@@ -258,6 +267,7 @@ textarea{
 			modalPlaceholder:'',
 			modalInput:'',
 			group:[],
+			chartoption:{},
 			detailTableData:[],
 			checkAllGroup:[],
 			formItem:{
@@ -330,6 +340,7 @@ textarea{
 				}
 			},
 			],
+
 			coumnsdetail:[
 			{
 				align:'center',
@@ -474,11 +485,17 @@ textarea{
 			totalcountc:0,
 			limitc:10,
 			pagec:1,
-
+			chartDataX:[],
+			chartDataY:[]
+			
+		},
+		mounted:function () {
+			this.loadChartData()
 		},
 		created:function(){
 			this.loadData();
 			this.loadContacts(1);
+			
 		},
 		methods: {
 			getName:function (name) {
@@ -824,6 +841,7 @@ textarea{
 					this.postlistshow=false;
 					this.editendingshow=false;
 					this.contactsshow=false;
+					this.countmsg=false
 					break;
 					case "postlist":
 					this.loadList();
@@ -831,12 +849,14 @@ textarea{
 					this.postlistshow=true;
 					this.contactsshow=false;
 					this.editendingshow=false;
+					this.countmsg=false
 					break;
 					case "editending":
 					this.postshow=false;
 					this.contactsshow=false;
 					this.postlistshow=false;
 					this.editendingshow=true;
+					this.countmsg=false
 					break;
 					case "contacts":
 					this.loadContacts(0);
@@ -844,8 +864,63 @@ textarea{
 					this.postshow=false;
 					this.postlistshow=false;
 					this.editendingshow=false;
+					this.countmsg=false
 					break;
+					case "countmsg":
+					this.loadChartData()
+					this.contactsshow=false;
+					this.postshow=false;
+					this.postlistshow=false;
+					this.editendingshow=false;
+					this.countmsg=true
+					break;
+
 				}
+			},
+			initChart:function () {
+				var myChart = echarts.init(this.$refs.container)
+				this.chartoption ={
+					title:{
+						text:"发送数量统计"
+					},
+					xAxis: {
+						name:"时间(月)",
+						data: this.chartDataX,
+					},
+					legend: {
+						orient: 'vertical',
+						left: 'left',
+						data: "数量"
+					},
+					yAxis: {
+						name:"发送数量(条)",
+						type : 'value'
+					},
+					tooltip : {
+						trigger: 'axis',
+						axisPointer : {            
+							type : 'shadow'        
+						}
+					},
+					dataZoom: [{
+						type: 'inside'
+					}, {
+						type: 'slider'
+					}],
+					color:"#2d8cf0",
+					series: [{
+						name:"发送数量",
+						type: 'bar',
+						data: this.chartDataY
+					}]
+				}
+				if (this.chartoption && typeof this.chartoption === "object") {
+					myChart.setOption(this.chartoption, true);	
+				}
+
+
+
+
 			},
 			loadContacts:function (status) {
 				var _this=this
@@ -926,6 +1001,39 @@ textarea{
 							_this.show=false
 						}else{
 							_this.show=true
+						}
+					},
+					error: function() {
+						_this.dialogAlert = true;
+						_this.alertMsg = '错误，请稍后再试！';
+					}
+				});
+
+
+			},
+			loadChartData:function () {
+				var _this=this
+				$.ajax({
+					url: "/xt/msgnotification/getcount",
+					type: 'post',
+					dataType: "json",
+					data: {
+					},
+					success: function(data) {
+						if(data.success) {
+							var dataX=[];
+							var dataY=[];
+							for (var i = 0; i < data.data.length; i++) {
+								dataX.push(data.data[i].Date)
+								dataY.push(data.data[i].Count)
+							}
+							_this.chartDataX = dataX
+							_this.chartDataY = dataY
+							_this.initChart()
+
+						}else{
+							_this.dialogAlert = true;
+							_this.alertMsg = data.errmsg;
 						}
 					},
 					error: function() {

@@ -51,6 +51,20 @@ type QueryMsgnotification struct {
 	Tel        string
 	Date       string
 }
+type QueryStatistics struct {
+	Date string
+	Count int64
+}
+
+func GetCount() ([]*QueryStatistics, error) {
+	o := orm.NewOrm()
+	sql := "select concat(year(date),'年',month(date),'月') as date ,count(a.id) as count from  msgnotification b left join telnumber a on b.id = a.pid where  a.status=1  group by month (date);"
+	statistics := make([]*QueryStatistics,0)
+
+	_,err := o.Raw(sql).QueryRows(&statistics)
+	return statistics, err
+}
+
 
 //查询发送记录
 func QueryMessage(opt *QueryMsgnotification) ([]*Msgnotification, int, error) {
